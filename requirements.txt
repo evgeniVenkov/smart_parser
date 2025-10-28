@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-dotenv
+httpx
+torch
+transformers
+scikit-learn
+Pillow
+requests
+beautifulsoup4
