@@ -3,17 +3,13 @@ import ai
 from urllib.parse import urlparse
 from parsers.amazon import parse as AmazonParser
 
-# DATA = json.load(open('data/test.json', encoding='utf-8'))
-# BASE_URL = 'https://avatars.mds.yandex.net/i?id=8d7fe7f2055e71df511f15bda056fca5_l-5259114-images-thumbs&n=13'
+DATA = json.load(open('data/test.json', encoding='utf-8'))
+BASE_URL = 'https://avatars.mds.yandex.net/get-mpic/16241877/2a0000019838a73e753d13ec4f9a881f0faf/orig'
 
 allowed_domains = [
-    "amazon.com", "amazon.ca", "amazon.co.uk",
+    "poshmark.com",
     "ebay.com", "ebay.co.uk",
-    "walmart.com",
-    "fashionphile.com",
-    "rebag.com",
-    "therealreal.com",
-    "nordstrom.com"
+    "vestiairecollective.com",
 ]
 parsers = {
     "www.amazon.com": AmazonParser,
@@ -44,7 +40,8 @@ def filter_results(results):
                     "title": item["title"],
                     "link": item["link"],
                     "thumbnail": item["thumbnail"],
-                    "source": domain
+                    "source": domain,
+                    "price": item["price"],
                 })
                 break
     return filtered
@@ -57,23 +54,39 @@ def start_parser(item):
 
 def work(data,base_url):
     filtered_results = filter_results(data["results"])
-    print(f"Итого найдено: {len(filtered_results)} англоязычных товаров")
+    print(f"Итого найдено: {len(filtered_results)} подходящих сайтов")
     correct_response = []
     # выводим красиво
     for i, item in enumerate(filtered_results, 1):
         print(f"{i}. {item['title']} ({item['source']})")
         print(f"   {item['link']}")
         print(f"   {item['thumbnail']}\n")
+        price_data = item.get("price")
+
+        if isinstance(price_data, dict):
+            price_value = price_data.get("value")
+        elif isinstance(price_data, str):
+            price_value = price_data
+        else:
+            price_value = None
+
+        if price_value:
+            print(f"   Цена: {price_value}\n")
+        else:
+            print("   Цена не найдена\n")
         res = ai.similarity(base_url, item['thumbnail'])
         if res:
             correct_response.append(item)
 
 
     if len(correct_response) >= 1:
-        print("Старт парсеров")
-        for el in correct_response:
-            start_parser(el)
+        print("Старт парсеров!\n"
+              f"всего подходящих товаров {len(correct_response)}")
+
+        # for el in correct_response:
+        #     start_parser(el)
     else:
         print("не нашлось похожих товаров")
 
 
+work(DATA, BASE_URL)
