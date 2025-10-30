@@ -44,10 +44,11 @@ def image_embedding_from_url(url):
     return embeddings.numpy()
 
 
-def similarity(url1, url2):
-    emb1 = image_embedding_from_url(url1)
+def similarity(emb1, url2):
     emb2 = image_embedding_from_url(url2)
-
+    if emb1 is None or emb2 is None:
+        print(f"Ошибка: один из эмбеддингов пустой. emb1={emb1}, emb2={emb2}")
+        return None
     similarit = cosine_similarity(emb1, emb2)[0][0]
     print("Сходство:", similarit)
 

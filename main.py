@@ -73,8 +73,10 @@ async def search(
     async with httpx.AsyncClient() as client:
         response = await client.get(SEARCH_URL, params=params)
         response.raise_for_status()
-        data = response.json()
-    return search_price(data)
+        data = search_price(response.json())
+        data['image_url'] = image_url
+
+    return data
 
 
 @app.post("/search/upload")
@@ -87,5 +89,5 @@ async def search_by_image(
     # загружаем на imgbb
     image_url = await upload_to_imgbb(image_bytes)
 
-    return search(image_url, query_text)
+    return await search(image_url, query_text)
 

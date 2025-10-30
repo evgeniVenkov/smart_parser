@@ -1,10 +1,8 @@
 import json
 import ai
 from urllib.parse import urlparse
-from parsers.amazon import parse as AmazonParser
 
 DATA = json.load(open('data/test.json', encoding='utf-8'))
-BASE_URL = 'https://avatars.mds.yandex.net/get-mpic/16241877/2a0000019838a73e753d13ec4f9a881f0faf/orig'
 
 allowed_domains = [
     "poshmark.com",
@@ -12,16 +10,10 @@ allowed_domains = [
     "vestiairecollective.com",
 ]
 parsers = {
-    "www.amazon.com": AmazonParser,
-    "www.amazon.ca": AmazonParser,
-    "www.amazon.co.uk": AmazonParser,
+    "www.poshmark.com": None,
+    "www.vestiairecollective.com": None,
     "www.ebay.com": None,
     "www.ebay.co.uk": None,
-    "www.walmart.com": None,
-    "www.fashionphile.com": None,
-    "www.rebag.com": None,
-    "www.therealreal.com": None,
-    "www.nordstrom.com": None,
 }
 
 
@@ -52,10 +44,12 @@ def start_parser(item):
     parsers[domain](item["link"])
 
 
-def work(data,base_url):
+def work(data):
+    base_url = data['image_url']
     filtered_results = filter_results(data["results"])
     print(f"Итого найдено: {len(filtered_results)} подходящих сайтов")
     correct_response = []
+    emb1 = ai.image_embedding_from_url(base_url)
     # выводим красиво
     for i, item in enumerate(filtered_results, 1):
         print(f"{i}. {item['title']} ({item['source']})")
@@ -74,10 +68,10 @@ def work(data,base_url):
             print(f"   Цена: {price_value}\n")
         else:
             print("   Цена не найдена\n")
-        res = ai.similarity(base_url, item['thumbnail'])
+
+        res = ai.similarity(emb1, item['thumbnail'])
         if res:
             correct_response.append(item)
-
 
     if len(correct_response) >= 1:
         print("Старт парсеров!\n"
@@ -89,4 +83,4 @@ def work(data,base_url):
         print("не нашлось похожих товаров")
 
 
-work(DATA, BASE_URL)
+work(DATA)
