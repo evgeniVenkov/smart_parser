@@ -9,9 +9,6 @@ SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 
 def get_item_data(url: str):
     print("запуск парсера ebay")
-    if url == 'https://www.ebay.com/itm/395716071598':
-        print("я молодец =)")
-        return {'title': 'CHANEL Quilted Caviar Beige GST Grand Shopping Tote Bag', 'price': 3500.0, 'currency': '$3,500.00', 'link': 'https://www.ebay.com/itm/395716071598?_skw=395716071598&itmmeta=01K8X5HAVPD526B7E1HGTVPQSA&hash=item5c228410ae:g:ddcAAOSwfPVm8LjC&itmprp=enc%3AAQAKAAAA0FkggFvd1GGDu0w3yXCmi1dpEc%2B%2FS8CmMhMZbdYBczUZYN%2B5%2FSJi2EKsUbRaBk6osvsFWn9f6zk6fXevo%2BSZu28teu9lGSOAdLBDrTIeMeC5h1fBcxCeVzLhM9LZs7ypzWY%2B0XrQRgmVTQ19dDnVDb0EqPzEB%2FOudBoPZjbJ0ZOvxEaZSx6bZgr1sK%2BBw4muKt9qRuuZoQsJfsbF06kz3nPmMcnpTnpAWh0W7xAc3GPayx916rIAgOkDFIGEJtZnCHXpq946MTKOtRKunRGW5zU%3D%7Ctkp%3ABk9SR4SuxaXHZg', 'thumbnail': 'https://i.ebayimg.com/images/g/ddcAAOSwfPVm8LjC/s-l500.webp'}
     item_id = extract_item_id(url)
     if item_id is None:
         print("Item not found")
@@ -54,7 +51,8 @@ def extract_item_id(url: str) -> str:
     match = re.match(pattern, url.strip())
 
     if not match:
-        print("Некорректная ссылка. Ожидается формат: https://www.ebay.com/itm/<item_id>")
+        print("Некорректная ссылка. Ожидается формат: https://www.ebay.com/itm/<item_id>\n"
+              f"{url}")
         return None
 
     return match.group(1)

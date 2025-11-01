@@ -1,16 +1,18 @@
 import requests
-import filter
+from filter import work
+# URL твоего локального API
+url = "http://127.0.0.1:8000/search/upload"
 
-api_url = "http://127.0.0.1:8000/search"
-url = input("Enter the URL: ")
+# путь к картинке
+image_path = "data/images/test.jpg"
 
-params = {"image_url": url}
 
-try:
-    response = requests.get(api_url, params=params, timeout=15)
-    response.raise_for_status()
-    result = response.json()
-    print("Ответ API:", result)
-    filter.work(result)
-except requests.exceptions.RequestException as e:
-    print("Ошибка при запросе к API:", e)
+# открываем файл в бинарном режиме
+with open(image_path, "rb") as img:
+    files = {"file": ("test.jpg", img, "image/jpeg")}
+    response = requests.post(url, files=files)
+
+# вывод результата
+print(response.status_code)
+work(response.json())
+
